@@ -4,6 +4,7 @@ from src.cage import Cage
 from src.zoo import Zoo
 from src.zoo_manager import ZooManager
 from src.user import User
+from ui.menu import Menu
 
 
 zoo = Zoo("Test zoo")
@@ -13,9 +14,19 @@ zoo_manager = ZooManager(zoo)
 owner = User("Maksym owner", "owner")
 zoo_manager.users.append(owner)
 
-while True:
+active_user = owner
+menu = Menu(zoo_manager, active_user)
 
-    user_choise = input("Select operation: ")
+menu.print_menu()
+
+user_choice = menu.get_user_menu_choice()
+result = menu.handle_choise(user_choice)
+
+
+
+# while True:
+
+#     user_choise = input("Select operation: ")
 
 
 

@@ -16,6 +16,9 @@ AUTHORISED_ROLES = {
 }
 
 
+AVAILABLE_ROLES = ['manager', 'caretaker']
+
+
 EDITABLE_FIELDS = {
     "user": ['name', 'role', 'responsible_cages', 'shift_is_active'],
     "section": ["name", "cages"],
@@ -152,6 +155,11 @@ class ZooManager:
         
         return None
     
+
+    def get_available_user_roles(self) -> list:
+        
+        return AVAILABLE_ROLES
+
     #----------- 
 
 
