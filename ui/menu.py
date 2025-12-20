@@ -1,5 +1,72 @@
-from src.zoo_manager import ZooManager
+from src.zoo_manager import ZooManager, AVAILABLE_ROLES
 from src.user import User
+
+def edit_user(user: User, zooManager: ZooManager):
+
+    fields_to_update = {}
+
+    while True:
+
+        print(f"1. Name: {user.name}")
+        print(f"2. Role: {user.role}")
+        print(f"3. Responsible cages: {user.responsible_cages}")
+        print(f"4. Shift is active: {user.shift_is_active}")
+
+        user_choice = int(input("Enter a number for a field you want to update, enter '0' to finish: "))
+
+        try:
+            if user_choice == 1:
+
+                new_name = input("Enter a new name: ")
+                fields_to_update['name'] = new_name
+
+            elif user_choice == 2:
+
+                new_role = input("Enter a new role (namager of caretaker): ").lower()
+
+                while new_role not in AVAILABLE_ROLES:
+                    print("You entered unavailable role")
+                    new_role = input("Enter a new role (namager of caretaker): ").lower()
+                
+                fields_to_update['role'] = new_role
+            
+            elif user_choice == 3:
+                
+                user_input = input("Enter a sequence of IDs separated by spaces: ")
+
+                numbers_as_strings = user_input.split()
+
+                ids_list = []
+
+                for id in numbers_as_strings:
+                    try:
+                        ids_list.append(int(id))
+                    except ValueError:
+                        print(f"Skipping an invalid ID of - {id}")
+                
+                print(ids_list)
+
+                existing_cage_ids = zooManager.get_all_cage_ids()
+
+                for id in ids_list:
+
+                    if id not in existing_cage_ids:
+                        print(f"The ID '{id}' does not exists and will be ignored")
+                        ids_list.remove(id)
+                
+                fields_to_update['cages'] = ids_list
+
+            elif user_choice == 4:
+
+                pass
+
+                     
+                
+
+        except ValueError:
+            print("Please select a valid number")
+
+
 
 
 class Menu():
@@ -43,7 +110,7 @@ class Menu():
 
 
     def get_user_menu_choice(self) -> int:
-        user_chose = 0
+        user_chose = -1
         while True:
             try:
                 user_chose = int(input("Enter your choise: "))
@@ -72,4 +139,51 @@ class Menu():
             new_user = self.zoo_manager.add_new_user(name=user_name, role=user_role, executor=self.executor)
 
             print(new_user['message'])
+
+        elif user_choice == 2:
+            
+            users = self.zoo_manager.get_all_users()
+            print(users)
+
+            for user in users:
+
+                print("----------")
+                print(f"{user['name']}, ID = {user['id']}")
+                print(f"Role - {user['role']}")
+                print(f"Responsible cages - {user['responsible_cages']}")
+                print(f"Shift is active - {user['shift_is_active']}")
+                print("----------")
+            
+            while True:
+                try:
+                    user_id = int(input("Enter the ID of the user you want to update: "))
+                    break
+                except ValueError:
+                    print("You ented invalid ID, please enter valid ID")
+                    user_id = int(input("Enter the ID of the user you want to update: "))
+
+            user = self.zoo_manager.get_user_by_id(user_id)
+
+            print(user)
+
+            if not user:
+                print(f"The user with ID={user_id} is not found")
+                return
+            
+            # while True:
+
+            #     print(f"1. Name: {user.name}")
+            #     print(f"2. Role: {user.role}")
+            #     print(f"3. Responsible cages: {user.responsible_cages}")
+            #     print(f"4. Shift is active: {user.shift_is_active}")
+
+            #     user_choice = int(input("Enter a number for a field you want to update, enter '0' to finish: "))
+
+
+
+
+            
+            
+            
+
         

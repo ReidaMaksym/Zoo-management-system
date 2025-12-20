@@ -14,19 +14,29 @@ zoo_manager = ZooManager(zoo)
 owner = User("Maksym owner", "owner")
 zoo_manager.users.append(owner)
 
+# caretaker1 = User("Maksym caretaker", "caretaker")
+# zoo_manager.users.append(caretaker1)
+
 active_user = owner
 menu = Menu(zoo_manager, active_user)
 
 menu.print_menu()
+
+# menu.executor = caretaker1
 
 user_choice = menu.get_user_menu_choice()
 result = menu.handle_choise(user_choice)
 
 
 
-# while True:
 
-#     user_choise = input("Select operation: ")
+while True:
+
+    # user_choise = input("Select operation: ")
+    user_choice = menu.get_user_menu_choice()
+    if user_choice == 0:
+        break
+    result = menu.handle_choise(user_choice)
 
 
 

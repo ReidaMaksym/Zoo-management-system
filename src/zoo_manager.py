@@ -159,6 +159,25 @@ class ZooManager:
     def get_available_user_roles(self) -> list:
         
         return AVAILABLE_ROLES
+    
+
+    def get_all_users(self) -> list:
+        
+        users = []
+
+        for user in self.users:
+            
+            combined_fields = {
+                "id": user.id,
+                "name": user.name,
+                "role": user.role,
+                "responsible_cages": user.responsible_cages,
+                "shift_is_active": user.shift_is_active
+            }
+
+            users.append(combined_fields)
+        
+        return users
 
     #----------- 
 
@@ -319,6 +338,19 @@ class ZooManager:
                     return {"section": section, "cage": cage}
                 
         return None
+    
+
+    def get_all_cage_ids(self) -> list[int]:
+
+        ids = []
+
+        for section in self.zoo.sections:
+
+            for cage in section.cages:
+
+                ids.append(cage.id)
+        
+        return ids
     
     # ----------
 
