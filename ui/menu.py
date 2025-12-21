@@ -1,78 +1,6 @@
 from src.zoo_manager import ZooManager, AVAILABLE_ROLES
 from src.user import User
 
-def prepare_fields_for_user_edit(user: User, zooManager: ZooManager):
-
-    fields_to_update = {}
-
-    print(f"1. Name: {user.name}")
-    print(f"2. Role: {user.role}")
-    print(f"3. Responsible cages: {user.responsible_cages}")
-    print(f"4. Shift is active: {user.shift_is_active}")
-
-    while True:
-
-        user_choice = input("Enter a number for a field you want to update, enter '0' to finish: ")
-        
-        if user_choice == '1':
-
-            new_name = input("Enter a new name: ")
-            fields_to_update['name'] = new_name
-
-        elif user_choice == '2':
-
-            new_role = input("Enter a new role (namager of caretaker): ").lower()
-
-            while new_role not in AVAILABLE_ROLES:
-                print("You entered invalid role")
-                new_role = input("Enter a new role (namager of caretaker): ").lower()
-            
-            fields_to_update['role'] = new_role
-        
-        elif user_choice == '3':
-            
-            user_input = input("Enter a sequence of IDs separated by spaces: ")
-
-            numbers_as_strings = user_input.split()
-
-            ids_list = []
-
-            for id in numbers_as_strings:
-                try:
-                    ids_list.append(int(id))
-                except ValueError:
-                    print(f"Skipping an invalid ID of - {id}")
-            
-            print(ids_list)
-
-            existing_cage_ids = zooManager.get_all_cage_ids()
-
-            for id in ids_list:
-
-                if id not in existing_cage_ids:
-
-                    print(f"The ID '{id}' does not exists and will be ignored")
-                    ids_list.remove(id)
-            
-            fields_to_update['responsible_cages'] = ids_list
-
-        elif user_choice == '4':
-            
-            user_input = input("Enter 'True' for the active shift, or enter 'False' for finished shift: ").lower()
-
-            if user_input == 'true':
-                fields_to_update['shift_is_active'] = True
-            else:
-                fields_to_update['shift_is_active'] = False
-            
-        elif user_choice == '0':
-            return fields_to_update
-        
-        else:
-            print("Sorry, no such field")
-    
-     
-
 
 class Menu():
 
@@ -127,6 +55,77 @@ class Menu():
         return user_chose
     
 
+    def _prepare_fields_for_user_edit(self, user: User):
+
+        fields_to_update = {}
+
+        print(f"1. Name: {user.name}")
+        print(f"2. Role: {user.role}")
+        print(f"3. Responsible cages: {user.responsible_cages}")
+        print(f"4. Shift is active: {user.shift_is_active}")
+
+        while True:
+
+            user_choice = input("Enter a number for a field you want to update, enter '0' to finish: ")
+            
+            if user_choice == '1':
+
+                new_name = input("Enter a new name: ")
+                fields_to_update['name'] = new_name
+
+            elif user_choice == '2':
+
+                new_role = input("Enter a new role (namager of caretaker): ").lower()
+
+                while new_role not in AVAILABLE_ROLES:
+                    print("You entered invalid role")
+                    new_role = input("Enter a new role (namager of caretaker): ").lower()
+                
+                fields_to_update['role'] = new_role
+            
+            elif user_choice == '3':
+                
+                user_input = input("Enter a sequence of IDs separated by spaces: ")
+
+                numbers_as_strings = user_input.split()
+
+                ids_list = []
+
+                for id in numbers_as_strings:
+                    try:
+                        ids_list.append(int(id))
+                    except ValueError:
+                        print(f"Skipping an invalid ID of - {id}")
+                
+                print(ids_list)
+
+                existing_cage_ids = self.zoo_manager.get_all_cage_ids()
+
+                for id in ids_list:
+
+                    if id not in existing_cage_ids:
+
+                        print(f"The ID '{id}' does not exists and will be ignored")
+                        ids_list.remove(id)
+                
+                fields_to_update['responsible_cages'] = ids_list
+
+            elif user_choice == '4':
+                
+                user_input = input("Enter 'True' for the active shift, or enter 'False' for finished shift: ").lower()
+
+                if user_input == 'true':
+                    fields_to_update['shift_is_active'] = True
+                else:
+                    fields_to_update['shift_is_active'] = False
+                
+            elif user_choice == '0':
+                return fields_to_update
+            
+            else:
+                print("Sorry, no such field")
+    
+
     def handle_choise(self, user_choice: int):
         
         if user_choice == 1:
@@ -175,7 +174,7 @@ class Menu():
                 print(f"The user with ID={user_id} is not found")
                 return
             
-            fields_to_update = prepare_fields_for_user_edit(user, self.zoo_manager)
+            fields_to_update = self._prepare_fields_for_user_edit(user)
 
             updated_user = self.zoo_manager.edit_user(user_id, self.executor, fields_to_update)
 
