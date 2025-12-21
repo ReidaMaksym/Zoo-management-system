@@ -33,11 +33,7 @@ class Menu():
         print("Enter '10' to add a new animal;")
         print("Enter '11' to edit the animal;")
         print("Enter '12' to delete the animal;")
-
-        print("-------------------------------")
-
         print("Enter '0' to close the system;")
-
 
         print("==============================")
 
@@ -126,46 +122,33 @@ class Menu():
                 print("Sorry, no such field")
     
 
-    def handle_choise(self, user_choice: int):
-        
-        if user_choice == 1:
-            
-            user_name = input("Enter the user name, for example: 'Maksym Reida': ")
+    def create_new_user(self):
+
+        user_name = input("Enter the user name, for example: 'Maksym Reida': ")
+        user_role = input("Enter the role of the user ('manager', 'caretaker'): ").lower()
+
+        available_user_roles = self.zoo_manager.get_available_user_roles()
+
+        while user_role not in available_user_roles:
+            print("Sorry, you entered an invalid role")
             user_role = input("Enter the role of the user ('manager', 'caretaker'): ").lower()
 
-            available_user_roles = self.zoo_manager.get_available_user_roles()
 
-            while user_role not in available_user_roles:
-                print("Sorry, you entered an invalid role")
-                user_role = input("Enter the role of the user ('manager', 'caretaker'): ").lower()
+        new_user = self.zoo_manager.add_new_user(name=user_name, role=user_role, executor=self.executor)
+
+        print(new_user['message'])
 
 
-            new_user = self.zoo_manager.add_new_user(name=user_name, role=user_role, executor=self.executor)
+    def edit_user(self):
 
-            print(new_user['message'])
-
-        elif user_choice == 2:
-            
-            # users = self.zoo_manager.get_all_users()
-            # print(users)
-
-            # for user in users:
-
-            #     print("----------")
-            #     print(f"{user['name']}, ID = {user['id']}")
-            #     print(f"Role - {user['role']}")
-            #     print(f"Responsible cages - {user['responsible_cages']}")
-            #     print(f"Shift is active - {user['shift_is_active']}")
-            #     print("----------")
-            
             while True:
                 try:
                     user_id = int(input("Enter the ID of the user you want to update: "))
                     break
                 except ValueError:
                     print("You ented invalid ID, please enter valid ID")
-                    user_id = int(input("Enter the ID of the user you want to update: "))
 
+            print(user_id)
             user = self.zoo_manager.get_user_by_id(user_id)
 
             print(user)
@@ -179,6 +162,21 @@ class Menu():
             updated_user = self.zoo_manager.edit_user(user_id, self.executor, fields_to_update)
 
             print(updated_user)
+    
+
+    def invalid_choise(self):
+        print("You entered unavailable option")
+
+
+    def handle_choise(self, user_choice: int):
+
+        available_choices = {
+            1: self.create_new_user,
+            2: self.edit_user
+        }
+
+        available_choices.get(user_choice, self.invalid_choise)()
+    
 
 
 
