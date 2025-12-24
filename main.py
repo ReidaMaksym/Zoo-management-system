@@ -24,8 +24,8 @@ menu.print_menu()
 
 # menu.executor = caretaker1
 
-user_choice = menu.get_user_menu_choice()
-result = menu.handle_choise(user_choice)
+# user_choice = menu.get_user_menu_choice()
+# result = menu.handle_choise(user_choice)
 
 
 

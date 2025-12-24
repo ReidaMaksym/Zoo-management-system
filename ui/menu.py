@@ -1,5 +1,18 @@
 from src.zoo_manager import ZooManager, AVAILABLE_ROLES
 from src.user import User
+from src.section import ZooSection
+
+MESSAGE_FOR_USER_TO_GET_ID = {
+    'user': {
+        'positive': 'Enter the ID of the user you want to update: ',
+        'negative': 'You ented invalid ID, please enter valid ID'
+    },
+
+    'section': {
+        'positive': 'Enter the ID of the section you want to update: ',
+        'negative': 'You ented invalid ID, please enter valid ID'
+    }
+}
 
 
 class Menu():
@@ -51,7 +64,9 @@ class Menu():
         return user_chose
     
 
-    def _prepare_fields_for_user_edit(self, user: User):
+    # ----- User logic -----
+
+    def _prepare_fields_for_user_edit(self, user: User) -> dict:
 
         fields_to_update = {}
 
@@ -122,6 +137,18 @@ class Menu():
                 print("Sorry, no such field")
     
 
+    def _get_id_from_input(self, message: dict) -> int:
+
+        while True:
+            try:
+                id = int(input(message['positive']))
+                break
+            except ValueError:
+                print(message['negative'])
+        
+        return id
+
+
     def create_new_user(self):
 
         user_name = input("Enter the user name, for example: 'Maksym Reida': ")
@@ -141,14 +168,10 @@ class Menu():
 
     def edit_user(self):
 
-            while True:
-                try:
-                    user_id = int(input("Enter the ID of the user you want to update: "))
-                    break
-                except ValueError:
-                    print("You ented invalid ID, please enter valid ID")
+            user_id = self._get_id_from_input(MESSAGE_FOR_USER_TO_GET_ID["user"])
 
             print(user_id)
+
             user = self.zoo_manager.get_user_by_id(user_id)
 
             print(user)
@@ -164,6 +187,70 @@ class Menu():
             print(updated_user)
     
 
+    def delete_user(self):
+
+        user_id = self._get_id_from_input(MESSAGE_FOR_USER_TO_GET_ID['user'])
+
+        delete_user = self.zoo_manager.delete_user(user_id, self.executor)
+
+        print(delete_user['message'])
+
+
+    # ----- Sections ------
+
+    def create_new_section(self):
+        
+        section_name = input("Enter a section name: ")
+
+        new_section = self.zoo_manager.add_new_section(section_name, self.executor, self.zoo_manager.zoo)
+
+        print(new_section['message'])
+    
+
+    def _prepare_fields_for_section_edit(self, section: ZooSection) -> dict:
+        
+        fields_to_update = {}
+
+        print(f'1. Name: {section.name}')
+        print(f"2. Cages: {section.cages}")
+
+        while True:
+
+            user_choice = input("Enter a number for a field you want to update, enter '0' to finish: ")
+
+            if user_choice == '1':
+
+                new_name = input("Enter a new secton name: ")
+
+                if len(new_name) == 0:
+                    print("The name is not changed")
+                
+                fields_to_update['name'] = new_name
+            
+            elif user_choice == '2':
+                user_iptut = input("Enter cages ids separated by space: ")
+
+                print(f"user_iptut: {user_iptut}")
+
+                ids_as_string = user_iptut.split()
+
+                print(f"ids_as_string: {ids_as_string}")
+
+
+            elif user_choice == '0':
+                return fields_to_update
+            
+            else:
+                print("Sorry, no such field")
+
+
+    def edit_section(self):
+
+        section_id = self._get_id_from_input(MESSAGE_FOR_USER_TO_GET_ID["section"])
+
+        # section = self.zoo_manager.get_section_by_id(section_id)
+    
+
     def invalid_choise(self):
         print("You entered unavailable option")
 
@@ -172,7 +259,10 @@ class Menu():
 
         available_choices = {
             1: self.create_new_user,
-            2: self.edit_user
+            2: self.edit_user,
+            3: self.delete_user,
+
+            4: self.create_new_section
         }
 
         available_choices.get(user_choice, self.invalid_choise)()

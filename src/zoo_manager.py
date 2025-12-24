@@ -341,6 +341,7 @@ class ZooManager:
     
 
     def get_all_cage_ids(self) -> list[int]:
+        """The method returns IDs of all cages from all sections"""
 
         ids = []
 
