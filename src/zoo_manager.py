@@ -183,7 +183,7 @@ class ZooManager:
 
 
     # ----- Section logic -----
-    def add_new_section(self, section_name: str, executor: User, zoo: Zoo):
+    def add_new_section(self, section_name: str, executor: User):
         """The method creates a new section"""
         
         if not self.is_authorised(executor, "add"):
@@ -191,7 +191,7 @@ class ZooManager:
         
         new_section = ZooSection(section_name)
 
-        zoo.sections.append(new_section)
+        self.zoo.sections.append(new_section)
 
         return {
             "success": True,
@@ -200,13 +200,13 @@ class ZooManager:
         }
     
 
-    def edit_section(self, section_id: int, parameters_to_update: dict, executor: User, zoo: Zoo):
+    def edit_section(self, section_id: int, parameters_to_update: dict, executor: User):
         """The method finds the section by its ID and edits it by the specified parameters"""
         
         if not self.is_authorised(executor, 'edit_section'):
             return {"success": False, "message": "Permission denied"}
         
-        target_section = self.get_section_by_id(section_id, zoo)
+        target_section = self.get_section_by_id(section_id)
 
         if not target_section:
             return {"success": False, "message": "The section is not found"}
@@ -225,18 +225,18 @@ class ZooManager:
         }
         
 
-    def delete_section(self, secton_id: int, executor: User, zoo: Zoo) -> dict:
+    def delete_section(self, secton_id: int, executor: User) -> dict:
         """The method deletes the section if the section is found"""
         
         if not self.is_authorised(executor, 'delete_section'):
             return {"success": False, "message": "Permossion denied"}
         
-        target_section = self.get_section_by_id(secton_id, zoo)
+        target_section = self.get_section_by_id(secton_id)
 
         if not target_section:
             return {"success": False, "message": "The section is not found"}
         
-        zoo.sections.remove(target_section)
+        self.zoo.sections.remove(target_section)
 
         return {
             "success": True, 
@@ -244,10 +244,10 @@ class ZooManager:
         }
 
 
-    def get_section_by_id(self, section_id: int, zoo: Zoo) -> ZooSection | None:
+    def get_section_by_id(self, section_id: int) -> ZooSection | None:
         """The method searches for a section and returns it if it is found, otherwise returns None"""
 
-        for section in zoo.sections:
+        for section in self.zoo.sections:
             if section.id == section_id:
                 return section
         
@@ -258,13 +258,13 @@ class ZooManager:
 
     # ----- Cages logic -----
 
-    def add_new_cage(self, section_id: int, executor: User, zoo: Zoo) -> dict:
+    def add_new_cage(self, section_id: int, executor: User) -> dict:
         """The metdod creates a new cage and adds it to the section"""
         
         if not self.is_authorised(executor, "add"):
             return {"success": False, "message": "Permission denied"}
         
-        targer_secrtion = self.get_section_by_id(section_id, zoo)
+        targer_secrtion = self.get_section_by_id(section_id)
 
         if not targer_secrtion:
             return {"success": False, "message": "The section is not found"}
@@ -280,13 +280,13 @@ class ZooManager:
         }
     
 
-    def edit_cage(self, cage_id: int, parameters_to_update: dict, executor: User, zoo: Zoo):
+    def edit_cage(self, cage_id: int, parameters_to_update: dict, executor: User):
         """The method finds the cage by its ID and edits it by the specified parameters"""
         
         if not self.is_authorised(executor, "edit"):
             return {"success": False, "message": "Permission denied"}
         
-        target_cage = self.get_cage_by_id(cage_id, zoo)
+        target_cage = self.get_cage_by_id(cage_id)
 
         if not target_cage:
             return {"success": False, "message": "The cage is not found"}
@@ -305,12 +305,12 @@ class ZooManager:
         }
     
 
-    def delete_cage(self, cage_id: int, executor: User, zoo: Zoo) -> dict:
+    def delete_cage(self, cage_id: int, executor: User) -> dict:
         """The method deletes the cage if the section is found"""
         if not self.is_authorised(executor, 'delete_cage'):
             return {"success": False, "message": "Permission denied"}
         
-        target_cage = self.get_cage_by_id(cage_id, zoo)
+        target_cage = self.get_cage_by_id(cage_id)
 
         if not target_cage:
             return {"success": False, "message": "The cage is not found"}
@@ -327,10 +327,10 @@ class ZooManager:
         }
         
 
-    def get_cage_by_id(self, cage_id: int, zoo: Zoo) -> dict | None:
+    def get_cage_by_id(self, cage_id: int) -> dict | None:
         """The method searches for a cage and returns it if it is found, otherwise returns None"""
 
-        for section in zoo.sections:
+        for section in self.zoo.sections:
             
             for cage in section.cages:
                 
@@ -358,13 +358,13 @@ class ZooManager:
 
     # ----- Animals logic -----
 
-    def add_new_animal(self, animal: Animal, cage_id: int, executor: User, zoo: Zoo) -> dict:
+    def add_new_animal(self, animal: Animal, cage_id: int, executor: User) -> dict:
         """The metdod creates a new animal and adds it to the cage"""
         
         if not self.is_authorised(executor, 'add_animal'):
             return {"success": False, "message": "Permisson denied"}
 
-        cage = self.get_cage_by_id(cage_id, zoo)
+        cage = self.get_cage_by_id(cage_id)
 
         if not cage:
             return {"success": False, "message": "The cage is not found"}
@@ -377,13 +377,13 @@ class ZooManager:
         }
     
 
-    def edit_animal(self, animal_id: int, parameters_to_update: dict, executor: User, zoo: Zoo):
+    def edit_animal(self, animal_id: int, parameters_to_update: dict, executor: User):
         """The method finds the animal by its ID and edits it by the specified parameters"""
         
         if not self.is_authorised(executor, "edit"):
             return {"success": False, "message": "Permission denied"}
         
-        target_animal = self.get_animal_by_id(animal_id, zoo)
+        target_animal = self.get_animal_by_id(animal_id)
 
         if not target_animal:
             return {"success": False, "message": "The animal is not found"}
@@ -402,13 +402,13 @@ class ZooManager:
         }
 
     
-    def delete_animal(self, animal_id: int, executor: User, zoo: Zoo):
+    def delete_animal(self, animal_id: int, executor: User):
         """The method deletes the animal if the section is found"""
 
         if not self.is_authorised(executor, 'delete_animal'):
             return {"success": False, "message": "Permission denied"}
         
-        target_animal = self.get_animal_by_id(animal_id, zoo)
+        target_animal = self.get_animal_by_id(animal_id)
 
         if not target_animal:
             return {"success": False, "message": "The animal is not found"}
@@ -421,10 +421,10 @@ class ZooManager:
         }
         
 
-    def get_animal_by_id(self, animal_id: int, zoo: Zoo) -> dict | None:
+    def get_animal_by_id(self, animal_id: int) -> dict | None:
         """The method searches for aт animal and returns it if it is found, otherwise returns None"""
 
-        for section in zoo.sections:
+        for section in self.zoo.sections:
 
             for cage in section.cages:
 

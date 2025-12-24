@@ -202,7 +202,7 @@ class Menu():
         
         section_name = input("Enter a section name: ")
 
-        new_section = self.zoo_manager.add_new_section(section_name, self.executor, self.zoo_manager.zoo)
+        new_section = self.zoo_manager.add_new_section(section_name, self.executor)
 
         print(new_section['message'])
     
