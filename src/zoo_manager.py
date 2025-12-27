@@ -3,6 +3,7 @@ from src.cage import Cage
 from src.section import ZooSection
 from src.user import User
 from src.zoo import Zoo
+from typing import TypedDict
 
 AUTHORISED_ROLES = {
     'add': ['owner', 'manager'],
@@ -25,6 +26,12 @@ EDITABLE_FIELDS = {
     "cage": ['animals'],
     "animal": ['name', 'age', 'fur_color', 'wing_span', 'can_fly']
 }
+
+
+class CageSearchResult(TypedDict):
+
+    section: ZooSection
+    cage: Cage
 
 
 class ZooManager:
@@ -253,6 +260,20 @@ class ZooManager:
         
         return None
     
+
+    def reasign_cage_to_another_section(self, target_section: ZooSection, cage_with_section: list[CageSearchResult]):
+        """The method receives as a section that is being edited (target_section) and the list of cages with their sections.
+        If a cage is associated with another section, it will be removed from the section and added to the target_section.cages"""
+        
+        for item in cage_with_section:
+            
+            if target_section.id != item["section"].id:
+
+                target_section.cages.append(item["cage"])
+
+                item["section"].cages.remove(item["cage"])
+            
+
     # -----------
 
 
@@ -327,7 +348,7 @@ class ZooManager:
         }
         
 
-    def get_cage_by_id(self, cage_id: int) -> dict | None:
+    def get_cage_by_id(self, cage_id: int) -> CageSearchResult | None:
         """The method searches for a cage and returns it if it is found, otherwise returns None"""
 
         for section in self.zoo.sections:
@@ -352,7 +373,25 @@ class ZooManager:
                 ids.append(cage.id)
         
         return ids
+
+
+    def find_existing_cage_ids_in_list(self, ids: list[int]) -> list[int]:
+        """The method receives as a parameter a list of cage ids, loops through this list and gets only existing ids
+        and writes them into new list and returns it"""
+
+        all_cage_ids = self.get_all_cage_ids()
+
+        real_ids = []
+
+        for id in ids:
+            
+            if id in all_cage_ids:
+
+                real_ids.append(id)
+        
+        return real_ids
     
+   
     # ----------
 
 

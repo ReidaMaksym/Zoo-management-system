@@ -108,18 +108,23 @@ class Menu():
                     except ValueError:
                         print(f"Skipping an invalid ID of - {id}")
                 
-                print(ids_list)
+                if len(ids_list) > 0:
 
-                existing_cage_ids = self.zoo_manager.get_all_cage_ids()
+                    existing_cage_ids = self.zoo_manager.get_all_cage_ids()
+                    unique_ids = list(set(ids_list))
 
-                for id in ids_list:
+                    for id in unique_ids:
 
-                    if id not in existing_cage_ids:
+                        if id not in existing_cage_ids:
 
-                        print(f"The ID '{id}' does not exists and will be ignored")
-                        ids_list.remove(id)
+                            print(f"The ID '{id}' does not exists and will be ignored")
+                            unique_ids.remove(id)
+                    
+                    fields_to_update['responsible_cages'] = unique_ids
                 
-                fields_to_update['responsible_cages'] = ids_list
+                else:
+                    print("Valid IDs are not found and the current list is not changed")
+                    fields_to_update['responsible_cages'] = user.responsible_cages
 
             elif user_choice == '4':
                 
@@ -170,11 +175,7 @@ class Menu():
 
             user_id = self._get_id_from_input(MESSAGE_FOR_USER_TO_GET_ID["user"])
 
-            print(user_id)
-
             user = self.zoo_manager.get_user_by_id(user_id)
-
-            print(user)
 
             if not user:
                 print(f"The user with ID={user_id} is not found")
@@ -196,7 +197,7 @@ class Menu():
         print(delete_user['message'])
 
 
-    # ----- Sections ------
+    # ----- Section logic ------
 
     def create_new_section(self):
         
@@ -228,15 +229,43 @@ class Menu():
                 fields_to_update['name'] = new_name
             
             elif user_choice == '2':
-                user_iptut = input("Enter cages ids separated by space: ")
 
-                print(f"user_iptut: {user_iptut}")
+                user_iptut = input("Enter cages ids separated by space: ")
 
                 ids_as_string = user_iptut.split()
 
-                print(f"ids_as_string: {ids_as_string}")
+                ids_as_int = []
 
+                for number in ids_as_string:
 
+                    try:
+                        ids_as_int.append(int(number))
+                    except ValueError:
+                        print(f"The provided ID = '{number}' is not an integer number and it will be ignored")
+
+                if len(ids_as_int) == 0:
+                    fields_to_update['cages'] = section.cages
+                    continue
+                
+                unique_ids = list(set(ids_as_int))
+                existing_ids = self.zoo_manager.find_existing_cage_ids_in_list(unique_ids)
+
+                if len(existing_ids) == 0:
+                    fields_to_update['cages'] = section.cages
+                    continue
+
+                cage_with_section = []
+
+                for cage_id in existing_ids:
+
+                    cage = self.zoo_manager.get_cage_by_id(cage_id)
+
+                    cage_with_section.append(cage)
+
+                self.zoo_manager.reasign_cage_to_another_section(section, cage_with_section)
+
+                fields_to_update['cages'] = section.cages
+                
             elif user_choice == '0':
                 return fields_to_update
             
@@ -248,7 +277,14 @@ class Menu():
 
         section_id = self._get_id_from_input(MESSAGE_FOR_USER_TO_GET_ID["section"])
 
-        # section = self.zoo_manager.get_section_by_id(section_id)
+        section = self.zoo_manager.get_section_by_id(section_id)
+
+        if not section:
+            print(f"The section with ID = '{section_id}' is not found")
+            return
+        
+        self._prepare_fields_for_section_edit(section)
+
     
 
     def invalid_choise(self):
@@ -262,19 +298,9 @@ class Menu():
             2: self.edit_user,
             3: self.delete_user,
 
-            4: self.create_new_section
+            4: self.create_new_section,
+            5: self.edit_section
         }
 
         available_choices.get(user_choice, self.invalid_choise)()
     
-
-
-
-
-
-
-            
-            
-            
-
-        

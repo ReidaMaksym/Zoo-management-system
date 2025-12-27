@@ -14,6 +14,23 @@ zoo_manager = ZooManager(zoo)
 owner = User("Maksym owner", "owner")
 zoo_manager.users.append(owner)
 
+zoo_manager.add_new_section("Section 1", owner)
+zoo_manager.add_new_section("Section 2", owner)
+zoo_manager.add_new_section("Section 3", owner)
+
+zoo_manager.add_new_cage(1, owner)
+zoo_manager.add_new_cage(1, owner)
+zoo_manager.add_new_cage(1, owner)
+
+zoo_manager.add_new_cage(2, owner)
+zoo_manager.add_new_cage(2, owner)
+zoo_manager.add_new_cage(2, owner)
+
+zoo_manager.add_new_cage(3, owner)
+zoo_manager.add_new_cage(3, owner)
+zoo_manager.add_new_cage(3, owner)
+
+
 # caretaker1 = User("Maksym caretaker", "caretaker")
 # zoo_manager.users.append(caretaker1)
 
