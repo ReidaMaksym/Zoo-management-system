@@ -254,17 +254,7 @@ class Menu():
                     fields_to_update['cages'] = section.cages
                     continue
 
-                cage_with_section = []
-
-                for cage_id in existing_ids:
-
-                    cage = self.zoo_manager.get_cage_by_id(cage_id)
-
-                    cage_with_section.append(cage)
-
-                self.zoo_manager.reasign_cage_to_another_section(section, cage_with_section)
-
-                fields_to_update['cages'] = section.cages
+                fields_to_update['cages'] = existing_ids
                 
             elif user_choice == '0':
                 return fields_to_update
@@ -283,8 +273,11 @@ class Menu():
             print(f"The section with ID = '{section_id}' is not found")
             return
         
-        self._prepare_fields_for_section_edit(section)
+        parameters_to_update = self._prepare_fields_for_section_edit(section)
 
+        updated_section = self.zoo_manager.edit_section(section.id, parameters_to_update, self.executor)
+        
+        print(updated_section)
     
 
     def invalid_choise(self):

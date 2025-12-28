@@ -223,7 +223,17 @@ class ZooManager:
                 continue
 
             if key in EDITABLE_FIELDS["section"]:
-                setattr(target_section, key, value)
+
+                if key == 'cages':
+                    
+                    cage_with_section = self._get_cage_and_section_objects_from_cage_id(value)
+
+                    new_cage_list = self._reasign_cage_to_another_section(target_section, cage_with_section)
+
+                    setattr(target_section, key, new_cage_list)
+
+                else:
+                    setattr(target_section, key, value)
         
         return {
             "success": True,
@@ -261,18 +271,22 @@ class ZooManager:
         return None
     
 
-    def reasign_cage_to_another_section(self, target_section: ZooSection, cage_with_section: list[CageSearchResult]):
-        """The method receives as a section that is being edited (target_section) and the list of cages with their sections.
-        If a cage is associated with another section, it will be removed from the section and added to the target_section.cages"""
+    def _reasign_cage_to_another_section(self, target_section: ZooSection, new_cage_list: list[CageSearchResult]) -> list[Cage]:
+        """The method receives as a parameter the section that is being edited (target_section) and the list of cages with
+        their sections. If the cage belongs not to target_section, it removes from section that it belongs. The method returns the
+        new list of cages for target_section"""
+       
+        result = []
         
-        for item in cage_with_section:
-            
-            if target_section.id != item["section"].id:
+        for item in new_cage_list:
 
-                target_section.cages.append(item["cage"])
+            if target_section.id != item["cage"].id:
 
                 item["section"].cages.remove(item["cage"])
-            
+
+            result.append(item["cage"])
+        
+        return result            
 
     # -----------
 
@@ -391,7 +405,22 @@ class ZooManager:
         
         return real_ids
     
-   
+
+    def _get_cage_and_section_objects_from_cage_id(self, ids: list[int]) -> list[CageSearchResult]:
+        """The method receives as a parameter the list of Cage ids, then finds the cage by id and 
+        appends it to a new list and then this list is returned"""
+        
+        cages_objects = []
+
+        for id in ids:
+
+            cage = self.get_cage_by_id(id)
+
+            if cage != None:
+                cages_objects.append(cage)
+        
+        return cages_objects
+            
     # ----------
 
 
