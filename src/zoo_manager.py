@@ -253,6 +253,9 @@ class ZooManager:
         if not target_section:
             return {"success": False, "message": "The section is not found"}
         
+        if len(target_section.cages) > 0:
+            return {"success": False, "message": f"The section: '{target_section.name}' has attached cages. Reassign the cages first"}
+        
         self.zoo.sections.remove(target_section)
 
         return {
@@ -280,7 +283,7 @@ class ZooManager:
         
         for item in new_cage_list:
 
-            if target_section.id != item["cage"].id:
+            if target_section.id != item["section"].id:
 
                 item["section"].cages.remove(item["cage"])
 

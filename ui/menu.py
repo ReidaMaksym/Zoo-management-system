@@ -4,12 +4,12 @@ from src.section import ZooSection
 
 MESSAGE_FOR_USER_TO_GET_ID = {
     'user': {
-        'positive': 'Enter the ID of the user you want to update: ',
+        'positive': 'Enter the ID of the user: ',
         'negative': 'You ented invalid ID, please enter valid ID'
     },
 
     'section': {
-        'positive': 'Enter the ID of the section you want to update: ',
+        'positive': 'Enter the ID of the section: ',
         'negative': 'You ented invalid ID, please enter valid ID'
     }
 }
@@ -280,6 +280,15 @@ class Menu():
         print(updated_section)
     
 
+    def delete_section(self):
+
+        section_id = self._get_id_from_input(MESSAGE_FOR_USER_TO_GET_ID["section"])
+
+        delete_section = self.zoo_manager.delete_section(section_id, self.executor)
+
+        print(delete_section)
+
+
     def invalid_choise(self):
         print("You entered unavailable option")
 
@@ -292,7 +301,8 @@ class Menu():
             3: self.delete_user,
 
             4: self.create_new_section,
-            5: self.edit_section
+            5: self.edit_section,
+            6: self.delete_section
         }
 
         available_choices.get(user_choice, self.invalid_choise)()
