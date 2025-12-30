@@ -368,6 +368,15 @@ class Menu():
         print(updated_cage)
 
 
+    def delete_cage(self):
+
+        cage_id = self._get_id_from_input(MESSAGE_FOR_USER_TO_GET_ID["cage"])
+
+        delete_cage = self.zoo_manager.delete_cage(cage_id, self.executor)
+
+        print(delete_cage)
+
+
     def invalid_choise(self):
         print("You entered unavailable option")
 
@@ -384,7 +393,8 @@ class Menu():
             6: self.delete_section,
 
             7: self.create_new_cage,
-            8: self.edit_cage
+            8: self.edit_cage,
+            9: self.delete_cage
         }
 
         available_choices.get(user_choice, self.invalid_choise)()
