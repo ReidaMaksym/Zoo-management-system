@@ -1,16 +1,22 @@
 from src.zoo_manager import ZooManager, AVAILABLE_ROLES
 from src.user import User
 from src.section import ZooSection
+from src.cage import Cage
 
 MESSAGE_FOR_USER_TO_GET_ID = {
     'user': {
         'positive': 'Enter the ID of the user: ',
-        'negative': 'You ented invalid ID, please enter valid ID'
+        'negative': 'You ented invalid ID, please enter valid user ID'
     },
 
     'section': {
         'positive': 'Enter the ID of the section: ',
-        'negative': 'You ented invalid ID, please enter valid ID'
+        'negative': 'You ented invalid ID, please enter valid section ID'
+    },
+
+    'cage': {
+        'positive': 'Enter the ID of the cage: ',
+        'negative': 'You ented invalid ID, please enter valid cage ID'
     }
 }
 
@@ -289,6 +295,79 @@ class Menu():
         print(delete_section)
 
 
+    # ----- Cage logic -----
+
+    def create_new_cage(self):
+
+        section_id = self._get_id_from_input(MESSAGE_FOR_USER_TO_GET_ID["section"])
+
+        new_cage = self.zoo_manager.add_new_cage(section_id, self.executor)
+
+        print(new_cage)
+
+    
+    def _prepare_fields_for_cage_edit(self, cage: Cage):
+
+        fields_to_update = {}
+
+        print(f"1. Animals: {cage.animals}")
+
+        while True:
+
+            user_choice = input("Enter a number for a field you want to update, enter '0' to finish: ")
+
+            if user_choice == '1':
+                
+                user_input = input("Enter animals IDs separated by space: ")
+
+                ids_as_strings = user_input.split()
+
+                ids_as_int = []
+
+                for number in ids_as_strings:
+
+                    try:
+                        ids_as_int.append(int(number))
+                    except ValueError:
+                        print(f"The provided ID = '{number}' is not an integer number and it will be ignored")
+                
+                if len(ids_as_int) == 0:
+                    fields_to_update['animals'] = cage.animals
+                    continue
+
+                unique_ids = list(set(ids_as_int))
+                existing_ids = self.zoo_manager.find_existing_animal_ids_in_list(unique_ids)
+
+                if len(existing_ids) == 0:
+                    fields_to_update["animals"] = cage.animals
+                    continue
+
+                fields_to_update["animals"] = existing_ids
+
+            elif user_choice == '0':
+                return fields_to_update
+            
+            else:
+                print("Sorry, no such field")
+    
+
+    def edit_cage(self):
+
+        cage_id = self._get_id_from_input(MESSAGE_FOR_USER_TO_GET_ID["cage"])
+
+        cage = self.zoo_manager.get_cage_by_id(cage_id)
+
+        if not cage:
+            print(f"The cage with ID = '{cage_id}' is not found")
+            return
+
+        parameters_to_update = self._prepare_fields_for_cage_edit(cage["cage"])
+
+        updated_cage = self.zoo_manager.edit_cage(cage["cage"].id, parameters_to_update, self.executor)
+
+        print(updated_cage)
+
+
     def invalid_choise(self):
         print("You entered unavailable option")
 
@@ -302,7 +381,10 @@ class Menu():
 
             4: self.create_new_section,
             5: self.edit_section,
-            6: self.delete_section
+            6: self.delete_section,
+
+            7: self.create_new_cage,
+            8: self.edit_cage
         }
 
         available_choices.get(user_choice, self.invalid_choise)()

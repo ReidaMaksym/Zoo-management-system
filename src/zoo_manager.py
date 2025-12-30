@@ -34,6 +34,12 @@ class CageSearchResult(TypedDict):
     cage: Cage
 
 
+class AnimalSearchResult(TypedDict):
+
+    cage: Cage
+    animal: Animal
+
+
 class ZooManager:
 
     def __init__(self, zoo: Zoo) -> None:
@@ -334,12 +340,22 @@ class ZooManager:
                 continue
 
             if key in EDITABLE_FIELDS["cage"]:
-                setattr(target_cage['cage'], key, value)
+
+                if key == 'animals':
+                    
+                    animals_with_cage = self._get_animal_and_cage_object_from_animal_ids(value)
+
+                    new_animal_list = self._reasing_animal_to_another_cage(target_cage["cage"], animals_with_cage)
+                
+                    setattr(target_cage["cage"], key, new_animal_list)
+                
+                else:
+                    setattr(target_cage['cage'], key, value)
 
         return {
             "success": True,
             "message": "The cage is successfully updated",
-            "cage": target_cage
+            "cage": target_cage["cage"]
         }
     
 
@@ -423,6 +439,21 @@ class ZooManager:
                 cages_objects.append(cage)
         
         return cages_objects
+    
+
+    def _reasing_animal_to_another_cage(self, target_cage: Cage, animals_with_cage: list[AnimalSearchResult]) -> list[Animal]:
+        
+        new_animal_list = []
+
+        for item in animals_with_cage:
+
+            if target_cage.id != item["cage"].id:
+
+                item["cage"].animals.remove(item["animal"])
+            
+            new_animal_list.append(item["animal"])
+        
+        return new_animal_list
             
     # ----------
 
@@ -492,7 +523,7 @@ class ZooManager:
         }
         
 
-    def get_animal_by_id(self, animal_id: int) -> dict | None:
+    def get_animal_by_id(self, animal_id: int) -> AnimalSearchResult | None:
         """The method searches for aт animal and returns it if it is found, otherwise returns None"""
 
         for section in self.zoo.sections:
@@ -509,14 +540,54 @@ class ZooManager:
                         }
                     
         return None
-
-
-
-
-
-
-
     
+
+    def get_all_animals_ids(self) -> list[int]:
+
+        animal_ids = []
+
+        for section in self.zoo.sections:
+
+            for cage in section.cages:
+
+                for animal in cage.animals:
+
+                    animal_ids.append(animal.id)
+        
+        return animal_ids
+    
+
+    def find_existing_animal_ids_in_list(self, animal_ids: list[int]) -> list[int]:
+
+        all_animal_ids = self.get_all_animals_ids()
+
+        existing_ids = []
+
+        if len(animal_ids) == 0:
+            return []
+
+        for animal_id in animal_ids:
+
+            if animal_id in all_animal_ids:
+
+                existing_ids.append(animal_id)
+        
+        return existing_ids
+    
+
+    def _get_animal_and_cage_object_from_animal_ids(self, aninal_ids: list[int]) -> list[AnimalSearchResult]:
+        
+        animal_with_cage = []
+
+        for id in aninal_ids:
+
+            animal = self.get_animal_by_id(id)
+
+            if animal != None:
+
+                animal_with_cage.append(animal)
+        
+        return animal_with_cage
 
 
 
