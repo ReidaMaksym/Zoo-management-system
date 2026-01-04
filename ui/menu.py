@@ -1,7 +1,8 @@
-from src.zoo_manager import ZooManager, AVAILABLE_ROLES
+from src.zoo_manager import ZooManager, AVAILABLE_ROLES, FIELDS_TO_CREATE_ANIMAL, AnimalFactory
 from src.user import User
 from src.section import ZooSection
 from src.cage import Cage
+from src.animal import Mammal
 
 MESSAGE_FOR_USER_TO_GET_ID = {
     'user': {
@@ -375,6 +376,39 @@ class Menu():
         delete_cage = self.zoo_manager.delete_cage(cage_id, self.executor)
 
         print(delete_cage)
+    
+
+    # ----- Animal logic -----
+
+    def create_new_animal(self):
+        
+        animal_type = input("Enter aninal type (Mammal, Bird, Reptile): ").lower()
+
+        fields_for_selected_type = FIELDS_TO_CREATE_ANIMAL.get(animal_type, None)
+
+        if not fields_for_selected_type:
+            print(f"Sorry, entered type = '{animal_type}' doesn't exist")
+            return
+        
+        animal_fields = {}
+
+        for field in fields_for_selected_type:
+            
+            user_input = input(f"Enter the {field[1]}: ")
+            animal_fields[field[0]] = user_input
+            
+        animal = AnimalFactory.create_animal(animal_type, animal_fields)
+
+        if not animal['success']:
+            print(animal['message'])
+            return
+
+        cage_id = self._get_id_from_input(MESSAGE_FOR_USER_TO_GET_ID['cage'])
+
+        new_animal = self.zoo_manager.add_new_animal(animal['animal'], cage_id, self.executor)
+
+        print(new_animal)
+        
 
 
     def invalid_choise(self):
@@ -394,7 +428,9 @@ class Menu():
 
             7: self.create_new_cage,
             8: self.edit_cage,
-            9: self.delete_cage
+            9: self.delete_cage,
+
+            10: self.create_new_animal
         }
 
         available_choices.get(user_choice, self.invalid_choise)()

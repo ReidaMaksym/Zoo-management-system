@@ -1,12 +1,36 @@
 from src.id_generator import get_next_id
+from typing import TypedDict, Unpack
+
+
+class AnimalFields(TypedDict):
+    name: str
+    age: str
+    animal_type: str
+
+
+class MammalFields(AnimalFields):
+    species: str
+    breed: str
+    fur_color: str
+
+
+class BirdFields(AnimalFields):
+    wing_span: float
+    can_fly: bool
+
+
+class ReptileFields(AnimalFields):
+    is_venomus: bool
+
+
 
 class Animal:
 
-    def __init__(self, name: str, age: int, animal_type: str) -> None:
+    def __init__(self, **kwargs: Unpack[AnimalFields]) -> None:
         self.id = get_next_id("animal")
-        self.name = name
-        self.age = age
-        self.animal_type = animal_type
+        self.name = kwargs['name']
+        self.age = kwargs['age']
+        self.animal_type = kwargs['animal_type']
         # self.id = 0
     
 
@@ -24,28 +48,23 @@ class Animal:
 
 class Mammal(Animal):
 
-    def __init__(self, name: str, age: int, animal_type: str, species: str, breed: str, fur_color: str) -> None:
-        super().__init__(name, age, animal_type)
-        # self.id = get_next_id("mammal")
-        self.species = species
-        self.breed = breed
-        self.fur_color = fur_color
+    def __init__(self, **kwargs: Unpack[MammalFields]) -> None:
+        super().__init__(**kwargs)
+        self.species = kwargs['species']
+        self.breed = kwargs['breed']
+        self.fur_color = kwargs['fur_color']
     
 
 class Bird(Animal):
 
-    def __init__(self, name: str, age: int, animal_type: str, wing_span: float, can_fly: bool) -> None:
-        super().__init__(name, age, animal_type)
-        # self.id = get_next_id("bird")
-        self.wing_span = wing_span
-        self.can_fly = can_fly
+    def __init__(self, **kwargs: Unpack[BirdFields]) -> None:
+        super().__init__(**kwargs)
+        self.wing_span = kwargs['wing_span']
+        self.can_fly = kwargs['can_fly']
 
     
 class Reptile(Animal):
 
-    def __init__(self, name: str, age: int, animal_type: str, is_venomus: bool) -> None:
-        super().__init__(name, age, animal_type)
-        # self.id = get_next_id("reptile")
-        self.is_venomus = is_venomus
-
-
+    def __init__(self, **kwargs: Unpack[ReptileFields]) -> None:
+        super().__init__(**kwargs)
+        self.is_venomus = kwargs['is_venomus']

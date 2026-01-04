@@ -2,9 +2,22 @@ from src.animal import Animal, Mammal, Reptile
 from src.section import ZooSection
 from src.cage import Cage
 from src.zoo import Zoo
-from src.zoo_manager import ZooManager
+from src.zoo_manager import ZooManager, AnimalFactory
 from src.user import User
 from ui.menu import Menu
+
+# def test(type, **kwargs):
+
+#     print(f"Type: {type}")
+#     print(f"Kwargs: {kwargs}")
+
+
+# arg = {
+#     'name': 'test',
+#     'age': 12
+# }
+
+# test("Test type", **arg)
 
 
 zoo = Zoo("Test zoo")
@@ -30,19 +43,19 @@ zoo_manager.add_new_cage(3, owner)
 zoo_manager.add_new_cage(3, owner)
 zoo_manager.add_new_cage(3, owner)
 
-reptile1 = Reptile("reptile 1", 1, "reptile", False)
-reptile2 = Reptile("reptile 2", 1, "reptile", False)
-reptile3 = Reptile("reptile 3", 1, "reptile", False)
-reptile4 = Reptile("reptile 4", 1, "reptile", False)
-reptile5 = Reptile("reptile 5", 1, "reptile", False)
-reptile6 = Reptile("reptile 6", 1, "reptile", False)
+# reptile1 = Reptile("reptile 1", '1', "reptile", False)
+# reptile2 = Reptile("reptile 2", '1', "reptile", False)
+# reptile3 = Reptile("reptile 3", '1', "reptile", False)
+# reptile4 = Reptile("reptile 4", '1', "reptile", False)
+# reptile5 = Reptile("reptile 5", '1', "reptile", False)
+# reptile6 = Reptile("reptile 6", '1', "reptile", False)
 
-zoo_manager.add_new_animal(reptile1, 1, owner)
-zoo_manager.add_new_animal(reptile2, 1, owner)
-zoo_manager.add_new_animal(reptile3, 1, owner)
-zoo_manager.add_new_animal(reptile4, 2, owner)
-zoo_manager.add_new_animal(reptile5, 2, owner)
-zoo_manager.add_new_animal(reptile6, 2, owner)
+# zoo_manager.add_new_animal(reptile1, 1, owner)
+# zoo_manager.add_new_animal(reptile2, 1, owner)
+# zoo_manager.add_new_animal(reptile3, 1, owner)
+# zoo_manager.add_new_animal(reptile4, 2, owner)
+# zoo_manager.add_new_animal(reptile5, 2, owner)
+# zoo_manager.add_new_animal(reptile6, 2, owner)
 
 
 

@@ -28,6 +28,32 @@ EDITABLE_FIELDS = {
 }
 
 
+FIELDS_TO_CREATE_ANIMAL = {
+    'mammal': [
+        ('name', 'Name'),
+        ('age', 'Age'),
+        ('animal_type', 'Animal Type'),
+        ('species', 'Species'),
+        ('breed', 'Breed'),
+        ('fur_color', 'Fur Color')
+    ],
+    'bird': [
+        ('name', 'Name'),
+        ('age', 'Age'),
+        ('animal_type', 'Animal Type'),
+        ('wing_span', 'Wing span'),
+        ('can_fly', 'Can fly')
+    ],
+    'reptile': [
+        ('name', 'Name'),
+        ('age', 'Age'),
+        ('animal_type', 'Animal Type'),
+        ('is_venomus', 'Is venomus')
+    ]
+}
+
+
+
 class CageSearchResult(TypedDict):
 
     section: ZooSection
@@ -39,6 +65,30 @@ class AnimalSearchResult(TypedDict):
     cage: Cage
     animal: Animal
 
+
+class AnimalFactory:
+
+    _regestry = {
+        'mammal': Mammal,
+        'bird': Bird,
+        'reptile': Reptile
+    }
+
+    @classmethod
+    def create_animal(cls, animal_type, data: dict):
+
+        try:
+            animal_class = cls._regestry[animal_type]
+            
+            return {
+                "success": True,
+                "message": f"The animal with type '{animal_type}' is created",
+                "animal": animal_class(**data)
+            }
+
+        except KeyError:
+            return {"success": False, "message": f"The type '{animal_type}' doesn't exist"}
+        
 
 class ZooManager:
 
