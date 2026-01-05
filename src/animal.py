@@ -15,12 +15,12 @@ class MammalFields(AnimalFields):
 
 
 class BirdFields(AnimalFields):
-    wing_span: float
-    can_fly: bool
+    wing_span: str
+    can_fly: str
 
 
 class ReptileFields(AnimalFields):
-    is_venomus: bool
+    is_venomus: str
 
 
 

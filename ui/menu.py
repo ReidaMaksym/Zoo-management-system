@@ -2,7 +2,7 @@ from src.zoo_manager import ZooManager, AVAILABLE_ROLES, FIELDS_TO_CREATE_ANIMAL
 from src.user import User
 from src.section import ZooSection
 from src.cage import Cage
-from src.animal import Mammal
+from src.animal import Mammal, Animal
 
 MESSAGE_FOR_USER_TO_GET_ID = {
     'user': {
@@ -17,6 +17,11 @@ MESSAGE_FOR_USER_TO_GET_ID = {
 
     'cage': {
         'positive': 'Enter the ID of the cage: ',
+        'negative': 'You ented invalid ID, please enter valid cage ID'
+    },
+
+    'animal': {
+        'positive': 'Enter the ID of the animal: ',
         'negative': 'You ented invalid ID, please enter valid cage ID'
     }
 }
@@ -408,7 +413,44 @@ class Menu():
         new_animal = self.zoo_manager.add_new_animal(animal['animal'], cage_id, self.executor)
 
         print(new_animal)
+    
+
+    def _prepare_fields_for_animal_edit(self, animal: Animal):
         
+        fields_to_update = {}
+
+        fields = self.zoo_manager.get_fields_to_edit_animal_by_animal_type(animal.animal_type)
+
+        if fields is None:
+            print(f"The animal type - '{animal.animal_type}' doesn't exist")
+            return
+        
+        for index, field in enumerate(fields, start=1):
+            field_name = field[0]
+            display_name = field[1]
+            print(f"{index}. {display_name}: {getattr(animal, field_name)}")
+
+        while True:
+            
+            user_choise = input("Enter a number for a field you want to update, enter '0' to finish: ")
+
+            if user_choise == '0':
+                return fields_to_update
+
+
+
+    
+    def edit_animal(self):
+        
+        animal_id = self._get_id_from_input(MESSAGE_FOR_USER_TO_GET_ID["animal"])
+
+        animal = self.zoo_manager.get_animal_by_id(animal_id)
+
+        if animal is None:
+            print(f"The animal with ID = '{animal_id}' is not found")
+            return
+        
+        self._prepare_fields_for_animal_edit(animal["animal"])
 
 
     def invalid_choise(self):
@@ -430,7 +472,8 @@ class Menu():
             8: self.edit_cage,
             9: self.delete_cage,
 
-            10: self.create_new_animal
+            10: self.create_new_animal,
+            11: self.edit_animal
         }
 
         available_choices.get(user_choice, self.invalid_choise)()

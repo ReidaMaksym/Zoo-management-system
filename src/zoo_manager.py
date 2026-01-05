@@ -53,6 +53,28 @@ FIELDS_TO_CREATE_ANIMAL = {
 }
 
 
+FIELDS_TO_EDIT_ANIMAL = {
+    'mammal': [
+        ('name', 'Name'),
+        ('age', 'Age'),
+        ('fur_color', 'Fur Color')
+    ],
+    'bird': [
+        ('name', 'Name'),
+        ('age', 'Age'),
+        ('wing_span', 'Wing span'),
+        ('can_fly', 'Can fly')
+    ],
+    'reptile': [
+        ('name', 'Name'),
+        ('age', 'Age')
+    ]    
+
+}
+
+
+ANIMAL_TYPES = ['mammal', 'bird', 'reptile']
+
 
 class CageSearchResult(TypedDict):
 
@@ -525,7 +547,7 @@ class ZooManager:
 
         return {
             "success": True,
-            "message": "The aninal is successfully added to the cage"
+            "message": "The animal is successfully added to the cage"
         }
     
 
@@ -640,5 +662,9 @@ class ZooManager:
         return animal_with_cage
 
 
+    def get_fields_to_edit_animal_by_animal_type(self, animal_type: str) -> list[tuple] | None:
+
+        return FIELDS_TO_EDIT_ANIMAL.get(animal_type, None)
+        
 
     
