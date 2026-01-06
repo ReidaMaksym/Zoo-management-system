@@ -32,6 +32,7 @@ zoo_manager.add_new_cage(3, owner)
 
 reptile1 = Reptile(name="reptile 1", age='1', animal_type="reptile", is_venomus='False')
 reptile2 = Reptile(name="reptile 2", age='1', animal_type="reptile", is_venomus='False')
+mammal1 = Mammal(name= 'mammal 1', age= '2', animal_type='mammal', species='test species', breed='test breed', fur_color='test fur color')
 # reptile3 = Reptile("reptile 3", '1', "reptile", False)
 # reptile4 = Reptile("reptile 4", '1', "reptile", False)
 # reptile5 = Reptile("reptile 5", '1', "reptile", False)
@@ -40,7 +41,7 @@ reptile2 = Reptile(name="reptile 2", age='1', animal_type="reptile", is_venomus=
 zoo_manager.add_new_animal(reptile1, 1, owner)
 zoo_manager.add_new_animal(reptile2, 1, owner)
 # zoo_manager.add_new_animal(reptile3, 1, owner)
-# zoo_manager.add_new_animal(reptile4, 2, owner)
+zoo_manager.add_new_animal(mammal1, 2, owner)
 # zoo_manager.add_new_animal(reptile5, 2, owner)
 # zoo_manager.add_new_animal(reptile6, 2, owner)
 

@@ -23,6 +23,11 @@ MESSAGE_FOR_USER_TO_GET_ID = {
     'animal': {
         'positive': 'Enter the ID of the animal: ',
         'negative': 'You ented invalid ID, please enter valid cage ID'
+    },
+
+    'user_choise': {
+        'positive': "Enter a number for a field you want to update, enter '0' to finish: ",
+        'negative': "Please enter the whole integer number"
     }
 }
 
@@ -432,12 +437,27 @@ class Menu():
 
         while True:
             
-            user_choise = input("Enter a number for a field you want to update, enter '0' to finish: ")
+            user_choise = self._get_id_from_input(MESSAGE_FOR_USER_TO_GET_ID['user_choise'])
 
-            if user_choise == '0':
+            if user_choise > 0 and user_choise <= len(fields):
+                
+                field_name = fields[user_choise - 1][0]
+                display_name = fields[user_choise - 1][1]
+
+                new_value = input(f"Enter a new {display_name}: ")
+
+                if len(new_value) == 0:
+                    print(f"The {display_name} is not changed")
+                    fields_to_update[field_name] = getattr(animal, field_name)
+                
+                else:
+                    fields_to_update[field_name] = new_value
+                
+            elif user_choise == 0:
                 return fields_to_update
-
-
+            
+            else:
+                print("Sorry, no such field")
 
     
     def edit_animal(self):
@@ -450,7 +470,11 @@ class Menu():
             print(f"The animal with ID = '{animal_id}' is not found")
             return
         
-        self._prepare_fields_for_animal_edit(animal["animal"])
+        parameters_to_update = self._prepare_fields_for_animal_edit(animal["animal"])
+
+        updated_animal = self.zoo_manager.edit_animal(animal_id, parameters_to_update, self.executor)
+
+        print(updated_animal)
 
 
     def invalid_choise(self):
