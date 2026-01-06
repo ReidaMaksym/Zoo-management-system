@@ -440,7 +440,7 @@ class Menu():
             user_choise = self._get_id_from_input(MESSAGE_FOR_USER_TO_GET_ID['user_choise'])
 
             if user_choise > 0 and user_choise <= len(fields):
-                
+
                 field_name = fields[user_choise - 1][0]
                 display_name = fields[user_choise - 1][1]
 
@@ -477,6 +477,15 @@ class Menu():
         print(updated_animal)
 
 
+    def delete_animal(self):
+
+        animal_id = self._get_id_from_input(MESSAGE_FOR_USER_TO_GET_ID["animal"])
+
+        deleted_animal = self.zoo_manager.delete_animal(animal_id, self.executor)
+
+        print(deleted_animal)
+
+
     def invalid_choise(self):
         print("You entered unavailable option")
 
@@ -497,7 +506,8 @@ class Menu():
             9: self.delete_cage,
 
             10: self.create_new_animal,
-            11: self.edit_animal
+            11: self.edit_animal,
+            12: self.delete_animal
         }
 
         available_choices.get(user_choice, self.invalid_choise)()
