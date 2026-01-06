@@ -121,32 +121,7 @@ class ZooManager:
     
     def is_authorised(self, executor: User, operation: str) -> bool:
         """The method determines whether the user is allowed to make an operation or not"""
-        if operation == 'add':
-            return executor.role in AUTHORISED_ROLES["add"]
-        
-        elif operation == 'edit':
-            return executor.role in AUTHORISED_ROLES["edit"]
-        
-        elif operation == 'delete':
-            return executor.role in AUTHORISED_ROLES["delete"]
-        
-        elif operation == 'edit_section':
-            return executor.role in AUTHORISED_ROLES["edit_section"]
-        
-        elif operation == 'delete_section':
-            return executor.role in AUTHORISED_ROLES["delete_section"]
-        
-        elif operation == 'delete_cage':
-            return executor.role in AUTHORISED_ROLES['delete_cage']
-        
-        elif operation == 'add_animal':
-            return executor.role in AUTHORISED_ROLES["add_animal"]
-        
-        elif operation == 'delete_animal':
-            return executor.role in AUTHORISED_ROLES['delete_animal']
-        
-        else:
-            return False
+        return executor.role in AUTHORISED_ROLES.get(operation, [])
 
 
     # ------ User logic ------
