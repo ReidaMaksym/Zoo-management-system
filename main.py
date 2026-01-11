@@ -5,14 +5,28 @@ from src.zoo import Zoo
 from src.zoo_manager import ZooManager, AnimalFactory
 from src.user import User
 from ui.menu import Menu
+from openpyxl import load_workbook, Workbook
+from data.read_write_excel import get_data_from_sheet, create_users_from_list, save_users_to_file
 
 
 zoo = Zoo("Test zoo")
 
 zoo_manager = ZooManager(zoo)
 
-owner = User("Maksym owner", "owner")
-zoo_manager.users.append(owner)
+file = 'data/zoo_data.xlsx'
+
+wb = load_workbook(file)
+
+# owner = User("Maksym owner", "owner")
+# zoo_manager.users.append(owner)
+
+users_from_file = get_data_from_sheet('users', wb)
+
+create_users_from_list(users_from_file, zoo_manager)
+
+print(zoo_manager.users)
+
+owner = zoo_manager.users[0]
 
 zoo_manager.add_new_section("Section 1", owner)
 zoo_manager.add_new_section("Section 2", owner)
@@ -68,5 +82,6 @@ while True:
     # user_choise = input("Select operation: ")
     user_choice = menu.get_user_menu_choice()
     if user_choice == 0:
+        save_users_to_file('users', wb, zoo_manager.users, file)
         break
     result = menu.handle_choise(user_choice)
