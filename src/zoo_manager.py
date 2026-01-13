@@ -19,6 +19,8 @@ AUTHORISED_ROLES = {
 
 AVAILABLE_ROLES = ['manager', 'caretaker']
 
+AVAILABLE_ROLES_FOR_FILE = ['owner' ,'manager', 'caretaker']
+
 
 EDITABLE_FIELDS = {
     "user": ['name', 'role', 'responsible_cages', 'shift_is_active'],
@@ -148,7 +150,7 @@ class ZooManager:
 
         if not self.is_authorised(executor, 'add'):
             return {"success": False, "message": "Permission denied"}
-
+        
         new_user = User(name, role)
         self.users.append(new_user)
 
@@ -156,6 +158,36 @@ class ZooManager:
             "success": True,
             "message": "The user is successfully created",
             "user": new_user
+        }
+    
+
+    def create_new_user_from_file(self, users_from_file: list[dict]):
+        
+        if len(users_from_file) == 0:
+            return {"success": False, "message": "There are no users in the file"}
+        
+        
+        for user in users_from_file:
+
+            if user['role'] not in AVAILABLE_ROLES_FOR_FILE:
+                print(f"The user '{user['name']}' is ignorred because role '{user['role']}' is not valid")
+                continue
+
+            if len(user["name"]) == 0:
+                print(f"The user with ID: {user['id']} doesn't have a name, they will be ignorred")
+                continue
+
+            name = user["name"]
+            role = user["role"]
+            shift = user["shift_is_active"]
+
+            new_user = User(name, role, shift_is_active=shift)
+
+            self.users.append(new_user)
+        
+        return {
+            "success": True,
+            "message": "The users are successfully created"
         }
 
 
@@ -257,6 +289,29 @@ class ZooManager:
             "success": True,
             "message": "The section is successfully created",
             "zoo_section": new_section
+        }
+    
+
+    def create_new_sections_from_file(self, sections_list: list):
+
+        if len(sections_list) == 0:
+            return {"success": False, "message": "There are no sections in the file"}
+        
+        for section in sections_list:
+
+            section_name = section['name']
+
+            if len(section_name) == 0:
+                print(f"The section name can not be empty, the section with ID: {section['id']} is ignorred")
+                continue
+
+            new_section = ZooSection(section_name)
+
+            self.zoo.sections.append(new_section)
+
+        return {
+            "success": True,
+            "message": "The sections are successfully created"
         }
     
 

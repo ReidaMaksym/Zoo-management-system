@@ -4,10 +4,10 @@ from src.cage import Cage
 
 class ZooSection:
 
-    def __init__(self, name: str) -> None:
+    def __init__(self, name: str, cages = None) -> None:
         self.id = get_next_id("zoo_section")
         self.name = name
-        self.cages = []
+        self.cages = cages if cages is not None else []
 
     
     def __str__(self) -> str:
