@@ -15,7 +15,7 @@ class User:
     
 
     def __repr__(self) -> str:
-        return f"<User; id: {self.id}, name:{self.name}, role: {self.role}, shift_is_active: {self.shift_is_active}>"
+        return f"<User; id: {self.id}, name:{self.name}, role: {self.role}, shift_is_active: {self.shift_is_active}, cages: {self.responsible_cages}>"
     
 
     def start_shift(self):

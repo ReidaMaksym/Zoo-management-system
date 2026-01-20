@@ -4,8 +4,6 @@ from src.user import User
 from src.section import ZooSection
 
 
-FIELDS_WITH_LIST_TYPE = ['responsible_cages', 'cages', 'animals']
-
 def get_data_from_sheet(sheet_name: str, work_book: Workbook) -> list:
 
     if sheet_name not in work_book.sheetnames:
@@ -25,16 +23,10 @@ def get_data_from_sheet(sheet_name: str, work_book: Workbook) -> list:
             key_name = work_sheet.cell(row=1, column=j).value
             cell_value = work_sheet.cell(row=i, column=j).value
 
-            # print(f"key_name: {key_name}, cell_value: {cell_value}, type: {type(cell_value)}")
-            # print("\n")
-
-            # if key_name in FIELDS_WITH_LIST_TYPE:
-            #     new_entity[key_name] = []
-            
-            # else:
-            new_entity[key_name] = cell_value
-        
-        # print(f"NEW ENTITY: {new_entity}")
+            if work_sheet.title == 'animals' and cell_value is None:
+                continue
+            else:
+                new_entity[key_name] = cell_value
 
         try:
             entities.append(new_entity)
@@ -44,18 +36,6 @@ def get_data_from_sheet(sheet_name: str, work_book: Workbook) -> list:
 
     return entities
 
-
-# def create_users_from_list(user_list: list[dict], zoo_manager: ZooManager):
-    
-#     for user in user_list:
-
-#         name = user['name']
-#         role = user['role']
-#         responsible_cages = user['responsible_cages']
-#         shift_is_active = user['shift_is_active']
-
-#         new_user = User(name, role, responsible_cages, shift_is_active)
-#         zoo_manager.users.append(new_user)
 
 def get_users_with_associated_cages(users_list: list) -> list:
     
@@ -73,7 +53,10 @@ def get_users_with_associated_cages(users_list: list) -> list:
         else:
             cages = cages.split(";")
 
-            cages.remove('')
+            try:
+                cages.remove('')
+            except ValueError:
+                print("ONE ELEMENT")
 
             cages = list(map(int, cages))
         
@@ -119,19 +102,41 @@ def get_sections_with_associated_cages(sections_list: list):
     return result
 
 
-        
-
-# def create_sections_from_list(sections_list: list, zoo_manager: ZooManager):
+def get_cages_with_associated_animals(cages_list: list):
     
-#     for section in sections_list:
+    result = []
 
-#         name = section['name']
-#         cages = section['cages']
+    for cage in cages_list:
 
-#         new_section = ZooSection(name, cages)
+        cage_id = cage['id']
 
-#         zoo_manager.zoo.sections.append(new_section)
+        animals = cage['animals']
 
+        if animals == '' or animals is None:
+
+            animals = []
+        
+        else:
+            try:
+                animals = animals.split(";")
+            except AttributeError:
+                animals = list(map(str, animals))
+
+            try:
+                animals.remove('')
+            except ValueError:
+                print("Please end the list of animal IDs with ';'")
+
+            animals = list(map(int, animals))
+        
+        entry = {
+            "cage_id": cage_id,
+            "animals": animals
+        }
+
+        result.append(entry)
+    
+    return result
     
 
 def save_users_to_file(sheet_name: str, work_book: Workbook, data: list[User], file_path: str):

@@ -24,7 +24,7 @@ users_from_file = file_funk.get_data_from_sheet('users', wb)
 
 users_with_associated_cages = file_funk.get_users_with_associated_cages(users_from_file)
 
-print(f"users_with_associated_cages: {users_with_associated_cages}")
+# print(f"users_with_associated_cages: {users_with_associated_cages}")
 
 # print(f"users_from_file: {users_from_file}")
 
@@ -34,7 +34,7 @@ zoo_manager.create_new_user_from_file(users_from_file)
 
 sections_from_file = file_funk.get_data_from_sheet('sections', wb)
 
-print(f"sections_from_file: {sections_from_file}")
+# print(f"sections_from_file: {sections_from_file}")
 
 # file_funk.create_sections_from_list(sections_from_file, zoo_manager)
 zoo_manager.create_new_sections_from_file(sections_from_file)
@@ -43,11 +43,95 @@ zoo_manager.create_new_sections_from_file(sections_from_file)
 
 sections_with_associated_cages = file_funk.get_sections_with_associated_cages(sections_from_file)
 
-print(f"sections_with_associated_cages: {sections_with_associated_cages}")
+# print(f"sections_with_associated_cages: {sections_with_associated_cages}")
 
 # print(zoo_manager.users)
 
+cages_from_file = file_funk.get_data_from_sheet('cages', wb)
+
+# print(f"cages_from_file: {cages_from_file}")
+
+cages = zoo_manager.create_new_cages_from_file(cages_from_file)
+
+# print(f"CAGES: {zoo_manager.temp_storage}")
+
+
 owner = zoo_manager.users[0]
+
+cages_with_associated_animals = file_funk.get_cages_with_associated_animals(cages_from_file)
+
+# print(f"cages_with_associated_animals: {cages_with_associated_animals}")
+
+animals_from_file = file_funk.get_data_from_sheet('animals', wb)
+# print(f"animals_from_file: {animals_from_file}")
+
+animals = zoo_manager.create_new_animals_from_file(animals_from_file)
+
+for item in cages_with_associated_animals:
+
+    target_cage = zoo_manager.get_cage_by_id_from_temp_storage(item['cage_id'])
+
+    animal_objects = zoo_manager.get_animals_from_temp_storage_by_id(item['animals'])
+
+    if target_cage is not None:
+
+        zoo_manager.edit_temp_cage(target_cage, {'animals': animal_objects})
+
+print(zoo_manager.temp_storage['cages'])
+
+for item in sections_with_associated_cages:
+
+    print(item)
+
+    target_section = zoo_manager.get_section_by_id_from_temp_storage(item['section_id'])
+
+    cages_list = []
+
+    for cage_id in item['cages']:
+        
+        cage = zoo_manager.get_cage_by_id_from_temp_storage(cage_id)
+
+        cages_list.append(cage)
+
+    if target_section is not None:
+
+        zoo_manager.edit_temp_section(target_section, cages_list)
+    
+    zoo_manager.zoo.sections.append(target_section)
+
+# print(zoo_manager.zoo.sections)
+
+for item in users_with_associated_cages:
+
+    print(item)
+
+    target_user = zoo_manager.get_user_by_id(item['user_id'])
+
+    cages_list = []
+
+    for cage_id in item['cages']:
+
+        cage = zoo_manager.get_cage_by_id_from_temp_storage(cage_id)
+
+        cages_list.append(cage)
+    
+    if target_user is not None:
+
+        zoo_manager.edit_temp_user(target_user, cages_list)
+
+print(zoo_manager.users)
+
+
+
+
+
+
+        
+
+    
+
+    
+
 
 # zoo_manager.add_new_section("Section 1", owner)
 # zoo_manager.add_new_section("Section 2", owner)

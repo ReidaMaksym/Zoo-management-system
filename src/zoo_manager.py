@@ -119,6 +119,11 @@ class ZooManager:
     def __init__(self, zoo: Zoo) -> None:
         self.zoo = zoo
         self.users = []
+        self.temp_storage = {
+            "sections": [],
+            "cages": [],
+            "animals": []
+        }
 
     
     def is_authorised(self, executor: User, operation: str) -> bool:
@@ -217,6 +222,11 @@ class ZooManager:
             "message": "The user is successfully updated",
             "user": editable_user
         }
+    
+
+    def edit_temp_user(self, user: User, cages_list: list[Cage]):
+
+        setattr(user, 'responsible_cages', cages_list)
 
 
     def delete_user(self, user_id: int, executor: User) -> dict:
@@ -307,7 +317,7 @@ class ZooManager:
 
             new_section = ZooSection(section_name)
 
-            self.zoo.sections.append(new_section)
+            self.temp_storage['sections'].append(new_section)
 
         return {
             "success": True,
@@ -348,6 +358,13 @@ class ZooManager:
             "message": "The section is successfully updated",
             "section": target_section
         }
+    
+
+    def edit_temp_section(self, section: ZooSection, cages: list[Cage]):
+
+        setattr(section, 'cages', cages)
+
+
         
 
     def delete_section(self, secton_id: int, executor: User) -> dict:
@@ -376,6 +393,16 @@ class ZooManager:
         """The method searches for a section and returns it if it is found, otherwise returns None"""
 
         for section in self.zoo.sections:
+            if section.id == section_id:
+                return section
+        
+        return None
+    
+
+    def get_section_by_id_from_temp_storage(self, section_id: int) -> ZooSection | None:
+
+        for section in self.temp_storage['sections']:
+
             if section.id == section_id:
                 return section
         
@@ -426,6 +453,22 @@ class ZooManager:
         }
     
 
+    def create_new_cages_from_file(self, cages_list: list):
+        
+        if len(cages_list) == 0:
+            return {"success": False, "message": "There are no cages in the file"}
+        
+        for _ in cages_list:
+
+            new_cage = Cage()
+            self.temp_storage['cages'].append(new_cage)
+
+        return {
+            "success": True,
+            "message": "The cages are successfully created"
+        }
+
+
     def edit_cage(self, cage_id: int, parameters_to_update: dict, executor: User):
         """The method finds the cage by its ID and edits it by the specified parameters"""
         
@@ -461,6 +504,11 @@ class ZooManager:
         }
     
 
+    def edit_temp_cage(self, cage: Cage, parameters_to_update: dict):
+
+        setattr(cage, 'animals', parameters_to_update['animals'])
+    
+
     def delete_cage(self, cage_id: int, executor: User) -> dict:
         """The method deletes the cage if the section is found"""
         if not self.is_authorised(executor, 'delete_cage'):
@@ -493,6 +541,17 @@ class ZooManager:
                 if cage.id == cage_id:
                     return {"section": section, "cage": cage}
                 
+        return None
+    
+
+    def get_cage_by_id_from_temp_storage(self, cage_id: int) -> Cage | None:
+        
+        for cage in self.temp_storage['cages']:
+
+            if cage_id == cage.id:
+
+                return cage
+        
         return None
     
 
@@ -581,6 +640,23 @@ class ZooManager:
         }
     
 
+    def create_new_animals_from_file(self, animals_list: list):
+
+        if len(animals_list) == 0:
+            return {"success": False, "message": "There are no animals in the file"}
+        
+        for item in animals_list:
+
+            new_animal = AnimalFactory.create_animal(item['animal_type'], item)
+
+            self.temp_storage['animals'].append(new_animal['animal'])
+        
+        return {
+            "success": True,
+            "message": "The animals are successfully created"
+        }
+    
+
     def edit_animal(self, animal_id: int, parameters_to_update: dict, executor: User):
         """The method finds the animal by its ID and edits it by the specified parameters"""
         
@@ -643,6 +719,25 @@ class ZooManager:
                     
         return None
     
+
+    def get_animals_from_temp_storage_by_id(self, animal_ids: list[int]):
+
+        result = []
+
+        if len(animal_ids) == 0:
+            return None
+        
+        for id in animal_ids:
+
+            for animal_obj in self.temp_storage['animals']:
+
+                if id == animal_obj.id:
+
+                    result.append(animal_obj)
+        
+        return result
+
+
 
     def get_all_animals_ids(self) -> list[int]:
 

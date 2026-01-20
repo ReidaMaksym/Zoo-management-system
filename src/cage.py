@@ -3,9 +3,9 @@ from src.animal import Animal
 
 class Cage:
 
-    def __init__(self) -> None:
+    def __init__(self, animals = None) -> None:
         self.id = get_next_id("cage")
-        self.animals = []
+        self.animals = animals if animals is not None else []
     
 
     def __str__(self) -> str:
