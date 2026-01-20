@@ -1,8 +1,8 @@
-from src.animal import Animal, Mammal, Bird, Reptile
-from src.cage import Cage
-from src.section import ZooSection
-from src.user import User
-from src.zoo import Zoo
+from src.domain.animal import Animal, Mammal, Bird, Reptile
+from src.domain.cage import Cage
+from src.domain.section import ZooSection
+from src.domain.user import User
+from src.domain.zoo import Zoo
 from typing import TypedDict
 
 AUTHORISED_ROLES = {

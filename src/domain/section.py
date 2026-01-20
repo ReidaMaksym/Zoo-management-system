@@ -1,5 +1,5 @@
 from src.id_generator import get_next_id
-from src.cage import Cage
+from src.domain.cage import Cage
 
 
 class ZooSection:

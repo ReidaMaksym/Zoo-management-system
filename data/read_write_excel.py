@@ -1,7 +1,7 @@
 from openpyxl import load_workbook, Workbook
 from src.zoo_manager import ZooManager
-from src.user import User
-from src.section import ZooSection
+from src.domain.user import User
+from src.domain.section import ZooSection
 
 
 def get_data_from_sheet(sheet_name: str, work_book: Workbook) -> list:

@@ -1,8 +1,8 @@
 from src.zoo_manager import ZooManager, AVAILABLE_ROLES, FIELDS_TO_CREATE_ANIMAL, AnimalFactory
-from src.user import User
-from src.section import ZooSection
-from src.cage import Cage
-from src.animal import Mammal, Animal
+from src.domain.user import User
+from src.domain.section import ZooSection
+from src.domain.cage import Cage
+from src.domain.animal import Mammal, Animal
 
 MESSAGE_FOR_USER_TO_GET_ID = {
     'user': {
