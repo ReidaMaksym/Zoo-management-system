@@ -156,6 +156,9 @@ class ZooManager:
         if not self.is_authorised(executor, 'add'):
             return {"success": False, "message": "Permission denied"}
         
+        if role not in self.get_available_user_roles():
+            return {"success": False, "message": "Provided role does not exist"}
+        
         new_user = User(name, role)
         self.users.append(new_user)
 

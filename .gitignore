@@ -1,0 +1,13 @@
+.vscode
+*.py[oc]
+*.log
+build/
+dist/
+*.egg-info/
+.venv
+env/
+venv/
+ENV/
+bin/
+lib/
+include/

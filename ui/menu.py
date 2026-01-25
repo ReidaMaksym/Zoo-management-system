@@ -103,11 +103,11 @@ class Menu():
 
             elif user_choice == '2':
 
-                new_role = input("Enter a new role (namager of caretaker): ").lower()
+                new_role = input("Enter a new role (manager of caretaker): ").lower()
 
                 while new_role not in AVAILABLE_ROLES:
                     print("You entered invalid role")
-                    new_role = input("Enter a new role (namager of caretaker): ").lower()
+                    new_role = input("Enter a new role (manager of caretaker): ").lower()
                 
                 fields_to_update['role'] = new_role
             

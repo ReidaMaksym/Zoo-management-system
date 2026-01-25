@@ -1,5 +1,5 @@
 from src.id_generator import get_next_id
-from src.animal import Animal
+from src.domain.animal import Animal
 
 class Cage:
 
