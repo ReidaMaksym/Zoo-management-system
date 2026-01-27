@@ -4,6 +4,8 @@ from src.domain.section import ZooSection
 from src.domain.user import User
 from src.domain.zoo import Zoo
 from typing import TypedDict
+from src.services.user_service import UserService
+from src.services.permissions import PermissionService
 
 AUTHORISED_ROLES = {
     'add': ['owner', 'manager'],
@@ -116,9 +118,11 @@ class AnimalFactory:
 
 class ZooManager:
 
-    def __init__(self, zoo: Zoo) -> None:
+    def __init__(self, zoo: Zoo, user_service: UserService, permissions: PermissionService) -> None:
         self.zoo = zoo
         self.users = []
+        self.user_service = user_service
+        self.permissions = permissions
         self.temp_storage = {
             "sections": [],
             "cages": [],
@@ -133,156 +137,45 @@ class ZooManager:
 
     # ------ User logic ------
     def can_edit_user(self, executor: User, target_user: User) -> bool:
-        """The method determines whether the executor can edit another user based on the executor's role"""
-
-        if executor.role == 'owner':
-            return True
-        
-        if executor.role == 'manager':
-            if target_user.role == 'caretaker':
-                return True
-            if executor.id == target_user.id:
-                return True
-        
-        if executor.role == 'caretaker':
-            return executor.id == target_user.id
-        
-        return False
+        """The method determines whether the executor can edit another user based on the executor's role"""        
+        return self.permissions.can_edit_user(executor, target_user)
     
 
     def add_new_user(self, name: str, role: str, executor: User) -> dict:
         """The method creates a new user"""
-
-        if not self.is_authorised(executor, 'add'):
-            return {"success": False, "message": "Permission denied"}
-        
-        if role not in self.get_available_user_roles():
-            return {"success": False, "message": "Provided role does not exist"}
-        
-        new_user = User(name, role)
-        self.users.append(new_user)
-
-        return {
-            "success": True,
-            "message": "The user is successfully created",
-            "user": new_user
-        }
+        return self.user_service.add_new_user(name, role, executor)
     
 
     def create_new_user_from_file(self, users_from_file: list[dict]):
-        
-        if len(users_from_file) == 0:
-            return {"success": False, "message": "There are no users in the file"}
-        
-        
-        for user in users_from_file:
-
-            if user['role'] not in AVAILABLE_ROLES_FOR_FILE:
-                print(f"The user '{user['name']}' is ignorred because role '{user['role']}' is not valid")
-                continue
-
-            if len(user["name"]) == 0:
-                print(f"The user with ID: {user['id']} doesn't have a name, they will be ignorred")
-                continue
-
-            name = user["name"]
-            role = user["role"]
-            shift = user["shift_is_active"]
-
-            new_user = User(name, role, shift_is_active=shift)
-
-            self.users.append(new_user)
-        
-        return {
-            "success": True,
-            "message": "The users are successfully created"
-        }
+        return self.user_service.create_new_user_from_file(users_from_file)
 
 
     def edit_user(self, user_id: int, executor: User, parameters_to_update: dict):
         """The method finds the user by its ID and edits it by the specified parameters"""
-        
-        if not self.is_authorised(executor, "edit"):
-            return {"success": False, "message": "Permission denied"}
-
-        editable_user = self.get_user_by_id(user_id)
-
-        if not editable_user:
-            return {"success": False, "message": "The user is not found"}
-        
-        if not self.can_edit_user(executor, editable_user):
-            return {"success": False, "message": "Permission denied"}
-        
-        for key, value in parameters_to_update.items():
-            if key == 'id':
-                continue
-
-            if key in EDITABLE_FIELDS["user"]:
-                setattr(editable_user, key, value)
-        
-        return {
-            "success": True,
-            "message": "The user is successfully updated",
-            "user": editable_user
-        }
+        return self.user_service.edit_user(user_id, executor, parameters_to_update)
     
 
     def edit_temp_user(self, user: User, cages_list: list[Cage]):
 
-        setattr(user, 'responsible_cages', cages_list)
+        self.user_service.edit_temp_user(user, cages_list)
 
 
     def delete_user(self, user_id: int, executor: User) -> dict:
         """The method deletes the user if the user is found"""
-        
-        if not self.is_authorised(executor, "delete"):
-            return {"success": False, "message": "Permission denied"}
-        
-        target_user = self.get_user_by_id(user_id)
-
-        if not target_user:
-            return {"success": False, "message": "The user is not found"}
-        
-        self.users.remove(target_user)
-
-        return {
-            "success": True,
-            "message": "The user is successfully deleted"
-        }
+        return self.user_service.delete_user(user_id, executor)
 
 
     def get_user_by_id(self, user_id: int) -> User | None:
-        """The method searches for a user and returns it if it is found, otherwise returns None"""
-
-        for user in self.users:
-            if user.id == user_id:
-                return user
-        
-        return None
+        """The method searches for a user and returns it if it is found, otherwise returns None"""        
+        return self.user_service.get_user_by_id(user_id)
     
 
     def get_available_user_roles(self) -> list:
-        
-        return AVAILABLE_ROLES
+        return self.user_service.get_available_user_roles()
     
 
     def get_all_users(self) -> list:
-        
-        users = []
-
-        for user in self.users:
-            
-            combined_fields = {
-                "id": user.id,
-                "name": user.name,
-                "role": user.role,
-                "responsible_cages": user.responsible_cages,
-                "shift_is_active": user.shift_is_active
-            }
-
-            users.append(combined_fields)
-        
-        return users
+        return self.user_service.get_all_users()
 
     #----------- 
 

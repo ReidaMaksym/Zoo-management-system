@@ -3,6 +3,8 @@ from src.domain.user import User
 from src.zoo_manager import ZooManager
 from src.domain.zoo import Zoo
 from src.id_generator import current_id
+from src.services.user_service import UserService
+from src.services.permissions import PermissionService
 
 @pytest.fixture(autouse=True)
 def reset_id_generator():
@@ -14,10 +16,12 @@ def zoo_manager():
 
     zoo = Zoo("Test name")
     users = [User("Owner", "owner"), User("Manager", "manger"), User("Caretaker", "caretaker")]
-    zoo_manager = ZooManager(zoo)
+    permissions = PermissionService()
+    user_service = UserService(permissions)
+    zoo_manager = ZooManager(zoo, user_service, permissions)
 
     for user in users:
-        zoo_manager.users.append(user)
+        user_service.users.append(user)
         
     return zoo_manager
 
@@ -51,16 +55,16 @@ def caretaker_user():
 ])
 def test_can_edit_user(zoo_manager, executor, target_user, expected):
 
-    result = zoo_manager.can_edit_user(executor, target_user)
+    result = zoo_manager.permissions.can_edit_user(executor, target_user)
 
     assert result == expected
 
 
 def test_can_user_edit_themself(zoo_manager, owner_user, manager_user, caretaker_user):
 
-    assert zoo_manager.can_edit_user(owner_user, owner_user) == True
-    assert zoo_manager.can_edit_user(manager_user, manager_user) == True
-    assert zoo_manager.can_edit_user(caretaker_user, caretaker_user) == True
+    assert zoo_manager.permissions.can_edit_user(owner_user, owner_user) == True
+    assert zoo_manager.permissions.can_edit_user(manager_user, manager_user) == True
+    assert zoo_manager.permissions.can_edit_user(caretaker_user, caretaker_user) == True
 
 
 @pytest.mark.parametrize("name,role,executor,success,message", [
@@ -81,7 +85,7 @@ def test_add_new_user_success(zoo_manager, name, role, executor, success, messag
     assert new_user['user'].name == name
     assert new_user['user'].role == role
 
-    assert new_user['user'] in zoo_manager.users
+    assert new_user['user'] in zoo_manager.user_service.users
 
 
 @pytest.mark.parametrize("name,role,executor,success,message", [
@@ -104,7 +108,7 @@ def test_add_new_user_fail(zoo_manager, name, role, executor, success, message):
     (2, {"id": 99}, True, "The user is successfully updated")
 ])
 def test_edit_user_success(reset_id_generator ,zoo_manager, user_id, parameters_to_update, success, message):
-    executor = zoo_manager.users[0]
+    executor = zoo_manager.user_service.users[0]
     result = zoo_manager.edit_user(user_id, executor, parameters_to_update)
 
     assert result['success'] == success
@@ -133,7 +137,7 @@ def test_edit_user_fail(reset_id_generator, zoo_manager, user_id, executor,param
     (3, True, "The user is successfully deleted")
 ])
 def test_delete_user_success(reset_id_generator, zoo_manager, user_id, success, message):
-    executor = zoo_manager.users[0]
+    executor = zoo_manager.user_service.users[0]
     result = zoo_manager.delete_user(user_id, executor)
 
     assert result['success'] == success

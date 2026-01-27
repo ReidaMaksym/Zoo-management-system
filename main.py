@@ -7,11 +7,16 @@ from src.domain.user import User
 from ui.menu import Menu
 from openpyxl import load_workbook, Workbook
 import data.read_write_excel as file_funk
+from src.services.user_service import UserService
+from src.services.permissions import PermissionService
 
 
 zoo = Zoo("Test zoo")
 
-zoo_manager = ZooManager(zoo)
+permissions = PermissionService()
+user_service = UserService(permissions)
+
+zoo_manager = ZooManager(zoo, user_service, permissions)
 
 file = 'data/zoo_data.xlsx'
 
