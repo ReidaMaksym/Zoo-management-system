@@ -9,14 +9,16 @@ from openpyxl import load_workbook, Workbook
 import data.read_write_excel as file_funk
 from src.services.user_service import UserService
 from src.services.permissions import PermissionService
+from src.services.section_service import SectionService
 
 
 zoo = Zoo("Test zoo")
 
 permissions = PermissionService()
 user_service = UserService(permissions)
+section_service = SectionService(permissions)
 
-zoo_manager = ZooManager(zoo, user_service, permissions)
+zoo_manager = ZooManager(zoo, user_service, permissions, section_service)
 
 file = 'data/zoo_data.xlsx'
 

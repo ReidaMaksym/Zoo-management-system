@@ -6,6 +6,7 @@ from src.domain.zoo import Zoo
 from typing import TypedDict
 from src.services.user_service import UserService
 from src.services.permissions import PermissionService
+from src.services.section_service import SectionService
 
 AUTHORISED_ROLES = {
     'add': ['owner', 'manager'],
@@ -118,11 +119,12 @@ class AnimalFactory:
 
 class ZooManager:
 
-    def __init__(self, zoo: Zoo, user_service: UserService, permissions: PermissionService) -> None:
+    def __init__(self, zoo: Zoo, user_service: UserService, permissions: PermissionService, section_service: SectionService) -> None:
         self.zoo = zoo
         self.users = []
         self.user_service = user_service
         self.permissions = permissions
+        self.section_service = section_service
         self.temp_storage = {
             "sections": [],
             "cages": [],
@@ -183,19 +185,10 @@ class ZooManager:
     # ----- Section logic -----
     def add_new_section(self, section_name: str, executor: User):
         """The method creates a new section"""
-        
-        if not self.is_authorised(executor, "add"):
-            return {"success": False, "message": "Permission denied"}
-        
-        new_section = ZooSection(section_name)
-
-        self.zoo.sections.append(new_section)
-
-        return {
-            "success": True,
-            "message": "The section is successfully created",
-            "zoo_section": new_section
-        }
+        result = self.section_service.add_new_section(section_name, executor)
+        if result['success']:
+            self.zoo.sections.append(result['zoo_section'])
+        return result
     
 
     def create_new_sections_from_file(self, sections_list: list):

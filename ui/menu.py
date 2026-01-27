@@ -4,6 +4,7 @@ from src.domain.section import ZooSection
 from src.domain.cage import Cage
 from src.domain.animal import Mammal, Animal
 from src.services.user_service import UserService
+from src.services.section_service import SectionService
 
 MESSAGE_FOR_USER_TO_GET_ID = {
     'user': {
