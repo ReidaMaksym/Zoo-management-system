@@ -185,10 +185,7 @@ class ZooManager:
     # ----- Section logic -----
     def add_new_section(self, section_name: str, executor: User):
         """The method creates a new section"""
-        result = self.section_service.add_new_section(section_name, executor)
-        if result['success']:
-            self.zoo.sections.append(result['zoo_section'])
-        return result
+        return self.section_service.add_new_section(section_name, executor)
     
 
     def create_new_sections_from_file(self, sections_list: list):
@@ -260,7 +257,7 @@ class ZooManager:
         """The method deletes the section if the section is found"""
         
         if not self.is_authorised(executor, 'delete_section'):
-            return {"success": False, "message": "Permossion denied"}
+            return {"success": False, "message": "Permission denied"}
         
         target_section = self.get_section_by_id(secton_id)
 
@@ -280,12 +277,7 @@ class ZooManager:
 
     def get_section_by_id(self, section_id: int) -> ZooSection | None:
         """The method searches for a section and returns it if it is found, otherwise returns None"""
-
-        for section in self.zoo.sections:
-            if section.id == section_id:
-                return section
-        
-        return None
+        return self.section_service.get_section_by_id(section_id)
     
 
     def get_section_by_id_from_temp_storage(self, section_id: int) -> ZooSection | None:

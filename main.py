@@ -16,7 +16,7 @@ zoo = Zoo("Test zoo")
 
 permissions = PermissionService()
 user_service = UserService(permissions)
-section_service = SectionService(permissions)
+section_service = SectionService(zoo, permissions)
 
 zoo_manager = ZooManager(zoo, user_service, permissions, section_service)
 
